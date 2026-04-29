@@ -6,15 +6,21 @@ on:
   - cron: "0 0/3 * * *"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+permissions:
+  contents: read
+
 jobs:
   build:
     # The type of runner that the job will run on
+    permissions:
+      issues: write  # for actions/stale to close stale issues
+      pull-requests: write  # for actions/stale to close stale PRs
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
           
-      - uses: actions/stale@v3
+      - uses: actions/stale@98ed4cb500039dbcccf4bd9bedada4d0187f2757 # v3.0.19
         name: Setting issue as idle
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -25,7 +31,7 @@ jobs:
           operations-per-run: 100
           exempt-issue-labels: 'backlog'
           
-      - uses: actions/stale@v3
+      - uses: actions/stale@98ed4cb500039dbcccf4bd9bedada4d0187f2757 # v3.0.19
         name: Setting PR as idle
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}

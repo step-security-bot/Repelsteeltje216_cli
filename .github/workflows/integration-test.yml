@@ -8,12 +8,17 @@ jobs:
   basic_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/login@v3
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40 # v2.19.0
+        with:
+          egress-policy: audit
+
+      - uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Specific test - Postive
-        uses: azure/cli@master
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # master
         with:
           azcliversion: 2.30.0
           inlineScript: |
@@ -21,7 +26,7 @@ jobs:
             az account show --output none
       
       - name: Latest version test - Postive
-        uses: azure/cli@master
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # master
         with:
           azcliversion: latest
           inlineScript: |
@@ -29,7 +34,7 @@ jobs:
             az account show --output none
       
       - name: Default version test - Postive
-        uses: azure/cli@master
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # master
         with:
           inlineScript: |
             az --version
@@ -38,7 +43,7 @@ jobs:
       - name: Invalid Version test - Negative
         id: test1
         continue-on-error: true
-        uses: azure/cli@master
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # master
         with:
           azcliversion: 0
           inlineScript: |
@@ -46,7 +51,7 @@ jobs:
       
       - name: Check Last step failed
         if: steps.test1.outcome == 'success'
-        uses: actions/github-script@v3
+        uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3.2.0
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
@@ -54,14 +59,14 @@ jobs:
       - name: Invalid Script test - Negative
         id: test2
         continue-on-error: true
-        uses: azure/cli@master
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # master
         with:
           azcliversion: latest
           inlineScript: " "
 
       - name: Check Last step failed
         if: steps.test2.outcome == 'success'
-        uses: actions/github-script@v3
+        uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3.2.0
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
@@ -69,14 +74,19 @@ jobs:
   os_test:
     runs-on: windows-latest
     steps:
-      - uses: azure/login@v3
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40 # v2.19.0
+        with:
+          egress-policy: audit
+
+      - uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Invalid OS - Negative
         id: test3
         continue-on-error: true
-        uses: azure/cli@master
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # master
         with:
           azcliversion: latest
           inlineScript: |
@@ -84,7 +94,7 @@ jobs:
 
       - name: Check Last step failed
         if: steps.test3.outcome == 'success'
-        uses: actions/github-script@v3
+        uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3.2.0
         with:
           script: |
             core.setFailed('Last action should fail but not. Please check it.')
